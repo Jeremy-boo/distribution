@@ -61,10 +61,8 @@ func manifestDispatcher(ctx *Context, r *http.Request) http.Handler {
 		"HEAD": http.HandlerFunc(manifestHandler.GetManifest),
 	}
 
-	if !ctx.readOnly {
-		mhandler["PUT"] = http.HandlerFunc(manifestHandler.PutManifest)
-		mhandler["DELETE"] = http.HandlerFunc(manifestHandler.DeleteManifest)
-	}
+	mhandler["PUT"] = http.HandlerFunc(manifestHandler.PutManifest)
+	mhandler["DELETE"] = http.HandlerFunc(manifestHandler.DeleteManifest)
 
 	return mhandler
 }
@@ -487,7 +485,6 @@ func (imh *manifestHandler) applyResourcePolicy(manifest distribution.Manifest) 
 // DeleteManifest removes the manifest with the given digest from the registry.
 func (imh *manifestHandler) DeleteManifest(w http.ResponseWriter, r *http.Request) {
 	dcontext.GetLogger(imh).Debug("DeleteImageManifest")
-
 	manifests, err := imh.Repository.Manifests(imh)
 	if err != nil {
 		imh.Errors = append(imh.Errors, err)

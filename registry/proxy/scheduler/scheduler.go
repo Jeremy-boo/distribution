@@ -193,6 +193,7 @@ func (ttles *TTLExpirationScheduler) startTimer(entry *schedulerEntry, ttl time.
 
 		ref, err := reference.Parse(entry.Key)
 		if err == nil {
+			dcontext.GetLogger(ttles.ctx).Infof("打印reference:%v", ref)
 			if err := f(ref); err != nil {
 				dcontext.GetLogger(ttles.ctx).Errorf("Scheduler error returned from OnExpire(%s): %s", entry.Key, err)
 			}

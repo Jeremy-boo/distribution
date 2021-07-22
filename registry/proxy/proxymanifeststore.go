@@ -12,7 +12,7 @@ import (
 )
 
 // todo(richardscothern): from cache control header or config
-const repositoryTTL = 24 * 7 * time.Hour
+const repositoryTTL = 10 * 365 * 24 * time.Hour
 
 type proxyManifestStore struct {
 	ctx             context.Context

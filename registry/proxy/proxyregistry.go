@@ -2,7 +2,6 @@ package proxy
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/url"
 	"sync"
@@ -20,6 +19,8 @@ import (
 	"github.com/docker/distribution/registry/storage/driver"
 )
 
+var OlderRegistry distribution.Namespace
+
 // proxyingRegistry fetches content from a remote registry and caches it locally
 type proxyingRegistry struct {
 	embedded       distribution.Namespace // provides local registry functionality
@@ -35,7 +36,7 @@ func NewRegistryPullThroughCache(ctx context.Context, registry distribution.Name
 		return nil, err
 	}
 
-	v := storage.NewVacuum(ctx, driver)
+	/*v := storage.NewVacuum(ctx, driver)
 	s := scheduler.New(ctx, driver, "/scheduler-state.json")
 	s.OnBlobExpire(func(ref reference.Reference) error {
 		var r reference.Canonical
@@ -91,16 +92,16 @@ func NewRegistryPullThroughCache(ctx context.Context, registry distribution.Name
 	err = s.Start()
 	if err != nil {
 		return nil, err
-	}
+	}*/
 
 	cs, err := configureAuth(config.Username, config.Password, config.RemoteURL)
 	if err != nil {
 		return nil, err
 	}
-
+	OlderRegistry = registry
 	return &proxyingRegistry{
-		embedded:  registry,
-		scheduler: s,
+		embedded: registry,
+		//scheduler: s,
 		remoteURL: *remoteURL,
 		authChallenger: &remoteAuthChallenger{
 			remoteURL: *remoteURL,

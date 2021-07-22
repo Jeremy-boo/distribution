@@ -1583,6 +1583,82 @@ var routeDescriptors = []RouteDescriptor{
 			},
 		},
 	},
+	{
+		Name:        RouteNameCustom,
+		Path:        "/v2/{name:" + reference.NameRegexp.String() + "}/custom/{reference:" + reference.TagRegexp.String() + "|" + digest.DigestRegexp.String() + "}",
+		Entity:      "Custom",
+		Description: "custom methods",
+		Methods: []MethodDescriptor{
+			{
+				Method:      "DELETE",
+				Description: "自定义删除策略",
+				Requests: []RequestDescriptor{
+					{
+						Headers: []ParameterDescriptor{
+							hostHeader,
+							authHeader,
+						},
+						PathParameters: []ParameterDescriptor{
+							nameParameterDescriptor,
+							//digestPathParameter,
+							referenceParameterDescriptor,
+						},
+						Successes: []ResponseDescriptor{
+							{
+								StatusCode: http.StatusAccepted,
+								Headers: []ParameterDescriptor{
+									{
+										Name:        "Content-Length",
+										Type:        "integer",
+										Description: "0",
+										Format:      "0",
+									},
+									digestHeader,
+								},
+							},
+						},
+						Failures: []ResponseDescriptor{
+							{
+								Name:       "Invalid Name or Digest",
+								StatusCode: http.StatusBadRequest,
+								ErrorCodes: []errcode.ErrorCode{
+									ErrorCodeDigestInvalid,
+									ErrorCodeNameInvalid,
+								},
+							},
+							{
+								Description: "The blob, identified by `name` and `digest`, is unknown to the registry.",
+								StatusCode:  http.StatusNotFound,
+								Body: BodyDescriptor{
+									ContentType: "application/json; charset=utf-8",
+									Format:      errorsBody,
+								},
+								ErrorCodes: []errcode.ErrorCode{
+									ErrorCodeNameUnknown,
+									ErrorCodeBlobUnknown,
+								},
+							},
+							{
+								Description: "Blob delete is not allowed because the registry is configured as a pull-through cache or `delete` has been disabled",
+								StatusCode:  http.StatusMethodNotAllowed,
+								Body: BodyDescriptor{
+									ContentType: "application/json; charset=utf-8",
+									Format:      errorsBody,
+								},
+								ErrorCodes: []errcode.ErrorCode{
+									errcode.ErrorCodeUnsupported,
+								},
+							},
+							unauthorizedResponseDescriptor,
+							repositoryNotFoundResponseDescriptor,
+							deniedResponseDescriptor,
+							tooManyRequestsDescriptor,
+						},
+					},
+				},
+			},
+		},
+	},
 }
 
 var routeDescriptorsMap map[string]RouteDescriptor

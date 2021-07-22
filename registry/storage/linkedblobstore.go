@@ -214,6 +214,7 @@ func (lbs *linkedBlobStore) Resume(ctx context.Context, id string) (distribution
 }
 
 func (lbs *linkedBlobStore) Delete(ctx context.Context, dgst digest.Digest) error {
+
 	if !lbs.deleteEnabled {
 		return distribution.ErrUnsupported
 	}

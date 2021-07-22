@@ -37,9 +37,7 @@ func blobDispatcher(ctx *Context, r *http.Request) http.Handler {
 		"HEAD": http.HandlerFunc(blobHandler.GetBlob),
 	}
 
-	if !ctx.readOnly {
-		mhandler["DELETE"] = http.HandlerFunc(blobHandler.DeleteBlob)
-	}
+	mhandler["DELETE"] = http.HandlerFunc(blobHandler.DeleteBlob)
 
 	return mhandler
 }
@@ -76,7 +74,6 @@ func (bh *blobHandler) GetBlob(w http.ResponseWriter, r *http.Request) {
 // DeleteBlob deletes a layer blob
 func (bh *blobHandler) DeleteBlob(w http.ResponseWriter, r *http.Request) {
 	context.GetLogger(bh).Debug("DeleteBlob")
-
 	blobs := bh.Repository.Blobs(bh)
 	err := blobs.Delete(bh, bh.Digest)
 	if err != nil {
